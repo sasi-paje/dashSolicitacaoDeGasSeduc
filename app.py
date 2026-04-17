@@ -391,8 +391,8 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         font_color='#1e293b',
         font=dict(size=12),
         xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
-        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
-        margin=dict(l=20, r=20, t=20, b=20)
+        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9', autorange='reversed'),
+        margin=dict(l=20, r=40, t=20, b=20)
     )
 
     top_unidades = filtered_df.groupby('unidade').size().reset_index(name='count').sort_values('count', ascending=False).nlargest(10, 'count')
@@ -410,7 +410,7 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         font_color='#1e293b',
         font=dict(size=12),
         xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
-        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
+        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9', autorange='reversed'),
         margin=dict(l=150, r=20, t=20, b=20)
     )
 
