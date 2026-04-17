@@ -9,6 +9,19 @@ from datetime import datetime
 df = get_gas_requests()
 df = treat_data(df)
 
+def create_initial_figure():
+    fig = go.Figure()
+    fig.update_layout(
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font_color='#1e293b',
+        xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8'),
+        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8')
+    )
+    return fig
+
+initial_figure = create_initial_figure()
+
 app = dash.Dash(__name__)
 app.title = "Dashboard - Solicitação de Gás"
 
@@ -237,7 +250,7 @@ app.layout = html.Div(
                                 )
                             ]
                         ),
-                        dcc.Graph(id='date-chart')
+                        dcc.Graph(id='date-chart', figure=initial_figure)
                     ]
                 ),
                 html.Div(
@@ -247,14 +260,14 @@ app.layout = html.Div(
                             style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'},
                             children=[
                                 html.H3("Por Tipo de Gás", style={'fontSize': '16px', 'fontWeight': '600', 'margin': '0 0 16px 0', 'color': '#1e293b'}),
-                                dcc.Graph(id='tipo-gas-chart')
+                                dcc.Graph(id='tipo-gas-chart', figure=initial_figure)
                             ]
                         ),
                         html.Div(
                             style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'},
                             children=[
                                 html.H3("Por Justificativa", style={'fontSize': '16px', 'fontWeight': '600', 'margin': '0 0 16px 0', 'color': '#1e293b'}),
-                                dcc.Graph(id='justificativa-chart')
+                                dcc.Graph(id='justificativa-chart', figure=initial_figure)
                             ]
                         )
                     ]
@@ -263,14 +276,14 @@ app.layout = html.Div(
                     style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'},
                     children=[
                         html.H3("Por Status", style={'fontSize': '16px', 'fontWeight': '600', 'margin': '0 0 16px 0', 'color': '#1e293b'}),
-                        dcc.Graph(id='status-chart')
+                        dcc.Graph(id='status-chart', figure=initial_figure)
                     ]
                 ),
                 html.Div(
                     style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'},
                     children=[
                         html.H3("Top 10 Unidades", style={'fontSize': '16px', 'fontWeight': '600', 'margin': '0 0 16px 0', 'color': '#1e293b'}),
-                        dcc.Graph(id='unidades-chart')
+                        dcc.Graph(id='unidades-chart', figure=initial_figure)
                     ]
                 )
             ]
