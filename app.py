@@ -63,7 +63,7 @@ app.layout = html.Div(
                 html.Div(
                     style={'flex': '1', 'minWidth': '200px'},
                     children=[
-                        html.Label("Tipo de Gás", style={'fontSize': '14px', 'color': '#94a3b8', 'marginBottom': '8px', 'display': 'block'}),
+                        html.Label("Tipo de Gás", style={'fontSize': '14px', 'color': '#64748b', 'marginBottom': '8px', 'display': 'block'}),
                         dcc.Dropdown(
                             id='tipo-gas-filter',
                             options=[{'label': t, 'value': t} for t in df['tipo_gas'].unique()] if 'tipo_gas' in df.columns else [],
@@ -75,7 +75,7 @@ app.layout = html.Div(
                 html.Div(
                     style={'flex': '1', 'minWidth': '200px'},
                     children=[
-                        html.Label("Status", style={'fontSize': '14px', 'color': '#94a3b8', 'marginBottom': '8px', 'display': 'block'}),
+                        html.Label("Status", style={'fontSize': '14px', 'color': '#64748b', 'marginBottom': '8px', 'display': 'block'}),
                         dcc.Dropdown(
                             id='status-filter',
                             options=[{'label': s, 'value': s} for s in df['status_name'].unique()] if 'status_name' in df.columns else [],
@@ -87,7 +87,7 @@ app.layout = html.Div(
                 html.Div(
                     style={'flex': '1', 'minWidth': '200px'},
                     children=[
-                        html.Label("Justificativa", style={'fontSize': '14px', 'color': '#94a3b8', 'marginBottom': '8px', 'display': 'block'}),
+                        html.Label("Justificativa", style={'fontSize': '14px', 'color': '#64748b', 'marginBottom': '8px', 'display': 'block'}),
                         dcc.Dropdown(
                             id='justificativa-filter',
                             options=[{'label': j, 'value': j} for j in df['justificativa'].unique()] if 'justificativa' in df.columns else [],
@@ -99,7 +99,7 @@ app.layout = html.Div(
                 html.Div(
                     style={'flex': '1', 'minWidth': '200px'},
                     children=[
-                        html.Label("Período", style={'fontSize': '14px', 'color': '#94a3b8', 'marginBottom': '8px', 'display': 'block'}),
+                        html.Label("Período", style={'fontSize': '14px', 'color': '#64748b', 'marginBottom': '8px', 'display': 'block'}),
                         dcc.DatePickerRange(
                             id='date-filter',
                             start_date=df['created_at'].min() if 'created_at' in df.columns else None,
@@ -152,14 +152,14 @@ app.layout = html.Div(
                     style={'display': 'grid', 'gridTemplateColumns': '1fr 1fr', 'gap': '24px'},
                     children=[
                         html.Div(
-                            style={'background': '#1e293b', 'borderRadius': '12px', 'padding': '20px'},
+                            style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'},
                             children=[
                                 html.H3("Por Tipo de Gás", style={'fontSize': '18px', 'fontWeight': '600', 'margin': '0 0 20px 0', 'color': '#1e293b'}),
                                 dcc.Graph(id='tipo-gas-chart')
                             ]
                         ),
                         html.Div(
-                            style={'background': '#1e293b', 'borderRadius': '12px', 'padding': '20px'},
+                            style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'},
                             children=[
                                 html.H3("Por Justificativa", style={'fontSize': '18px', 'fontWeight': '600', 'margin': '0 0 20px 0', 'color': '#1e293b'}),
                                 dcc.Graph(id='justificativa-chart')
