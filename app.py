@@ -402,7 +402,8 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         font=dict(size=12),
         xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
         yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
-        margin=dict(l=20, r=20, t=20, b=20)
+        margin=dict(l=20, r=20, t=20, b=20),
+        showlegend=False
     )
 
     justificativa_chart = px.bar(
@@ -419,7 +420,8 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         font=dict(size=12),
         xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
         yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
-        margin=dict(l=20, r=20, t=20, b=20)
+        margin=dict(l=20, r=20, t=20, b=20),
+        showlegend=False
     )
 
     status_df = filtered_df.groupby('status_name').size().reset_index(name='count').sort_values('count', ascending=False)
@@ -440,7 +442,8 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         font=dict(size=12),
         xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
         yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9', autorange='reversed'),
-        margin=dict(l=20, r=40, t=20, b=20)
+        margin=dict(l=20, r=40, t=20, b=20),
+        showlegend=False
     )
 
     top_unidades = filtered_df.groupby('unidade').size().reset_index(name='count').sort_values('count', ascending=False).nlargest(10, 'count')
@@ -460,7 +463,8 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         font=dict(size=12),
         xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
         yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9', autorange='reversed'),
-        margin=dict(l=150, r=20, t=20, b=20)
+        margin=dict(l=150, r=20, t=20, b=20),
+        showlegend=False
     )
 
     return date_chart, tipo_gas_chart, justificativa_chart, status_chart, unidades_chart
