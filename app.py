@@ -37,41 +37,94 @@ app.layout = html.Div(
             },
             children=[
                 html.Div(
-                    style={'display': 'flex', 'alignItems': 'center', 'gap': '12px'},
                     children=[
-                        html.I(
-                            className="bi bi-gear-wide-connected",
-                            style={'fontSize': '28px', 'color': '#6366f1'}
+                        html.H1(
+                            "Solicitações de Gás",
+                            style={'fontSize': '22px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'}
                         ),
-                        html.Div(
-                            children=[
-                                html.H1(
-                                    "Solicitações de Gás",
-                                    style={'fontSize': '22px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'}
-                                ),
-                                html.P(
-                                    f"Atualizado hoje às {datetime.now().strftime('%H:%M')}",
-                                    style={'fontSize': '13px', 'color': '#64748b', 'margin': '4px 0 0 0'}
-                                )
-                            ]
+                        html.P(
+                            f"Atualizado hoje às {datetime.now().strftime('%H:%M')}",
+                            style={'fontSize': '13px', 'color': '#64748b', 'margin': '4px 0 0 0'}
+                        )
+                    ]
+                )
+            ]
+        ),
+
+        html.Div(
+            style={
+                'display': 'flex',
+                'gap': '16px',
+                'marginBottom': '24px',
+                'flexWrap': 'wrap',
+                'backgroundColor': '#FFFFFF',
+                'padding': '20px 24px',
+                'borderRadius': '12px',
+                'boxShadow': '0 2px 8px rgba(0,0,0,0.1)',
+                'border': '1px solid #e2e8f0'
+            },
+            children=[
+                html.Div(
+                    style={'flex': '1', 'minWidth': '180px'},
+                    children=[
+                        html.Label("Município", style={'fontSize': '12px', 'fontWeight': '600', 'color': '#475569', 'marginBottom': '6px', 'display': 'block', 'textTransform': 'uppercase', 'letterSpacing': '0.5px'}),
+                        dcc.Dropdown(
+                            id='municipio-filter',
+                            options=[{'label': m, 'value': m} for m in df['municipio'].unique()] if 'municipio' in df.columns else [],
+                            value=None,
+                            placeholder="Selecione...",
+                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
                         )
                     ]
                 ),
                 html.Div(
-                    style={'display': 'flex', 'alignItems': 'center', 'gap': '8px'},
+                    style={'flex': '1', 'minWidth': '180px'},
                     children=[
-                        html.Span(
-                            style={
-                                'width': '8px',
-                                'height': '8px',
-                                'backgroundColor': '#22c55e',
-                                'borderRadius': '50%',
-                                'display': 'inline-block'
-                            }
-                        ),
-                        html.Span(
-                            "Dados em tempo real",
-                            style={'fontSize': '13px', 'color': '#64748b'}
+                        html.Label("Tipo de Gás", style={'fontSize': '12px', 'fontWeight': '600', 'color': '#475569', 'marginBottom': '6px', 'display': 'block', 'textTransform': 'uppercase', 'letterSpacing': '0.5px'}),
+                        dcc.Dropdown(
+                            id='tipo-gas-filter',
+                            options=[{'label': t, 'value': t} for t in df['tipo_gas'].unique()] if 'tipo_gas' in df.columns else [],
+                            value=None,
+                            placeholder="Selecione...",
+                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
+                        )
+                    ]
+                ),
+                html.Div(
+                    style={'flex': '1', 'minWidth': '180px'},
+                    children=[
+                        html.Label("Status", style={'fontSize': '12px', 'fontWeight': '600', 'color': '#475569', 'marginBottom': '6px', 'display': 'block', 'textTransform': 'uppercase', 'letterSpacing': '0.5px'}),
+                        dcc.Dropdown(
+                            id='status-filter',
+                            options=[{'label': s, 'value': s} for s in df['status_name'].unique()] if 'status_name' in df.columns else [],
+                            value=None,
+                            placeholder="Selecione...",
+                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
+                        )
+                    ]
+                ),
+                html.Div(
+                    style={'flex': '1', 'minWidth': '180px'},
+                    children=[
+                        html.Label("Justificativa", style={'fontSize': '12px', 'fontWeight': '600', 'color': '#475569', 'marginBottom': '6px', 'display': 'block', 'textTransform': 'uppercase', 'letterSpacing': '0.5px'}),
+                        dcc.Dropdown(
+                            id='justificativa-filter',
+                            options=[{'label': j, 'value': j} for j in df['justificativa'].unique()] if 'justificativa' in df.columns else [],
+                            value=None,
+                            placeholder="Selecione...",
+                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
+                        )
+                    ]
+                ),
+                html.Div(
+                    style={'flex': '1', 'minWidth': '180px'},
+                    children=[
+                        html.Label("Período", style={'fontSize': '12px', 'fontWeight': '600', 'color': '#475569', 'marginBottom': '6px', 'display': 'block', 'textTransform': 'uppercase', 'letterSpacing': '0.5px'}),
+                        dcc.DatePickerRange(
+                            id='date-filter',
+                            start_date=df['created_at'].min() if 'created_at' in df.columns else None,
+                            end_date=df['created_at'].max() if 'created_at' in df.columns else None,
+                            style={'width': '100%', 'fontSize': '13px'}
                         )
                     ]
                 )
@@ -134,85 +187,6 @@ app.layout = html.Div(
                                 ),
                                 html.I(className="bi bi-building", style={'fontSize': '24px', 'color': '#f59e0b', 'opacity': '0.7'})
                             ]
-                        )
-                    ]
-                )
-            ]
-        ),
-
-        html.Div(
-            style={
-                'display': 'flex',
-                'gap': '16px',
-                'marginBottom': '24px',
-                'flexWrap': 'wrap',
-                'backgroundColor': '#FFFFFF',
-                'padding': '16px 20px',
-                'borderRadius': '12px',
-                'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'
-            },
-            children=[
-                html.Div(
-                    style={'flex': '1', 'minWidth': '180px'},
-                    children=[
-                        html.Label("Município", style={'fontSize': '12px', 'fontWeight': '500', 'color': '#64748b', 'marginBottom': '6px', 'display': 'block'}),
-                        dcc.Dropdown(
-                            id='municipio-filter',
-                            options=[{'label': m, 'value': m} for m in df['municipio'].unique()] if 'municipio' in df.columns else [],
-                            value=None,
-                            placeholder="Selecione...",
-                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
-                        )
-                    ]
-                ),
-                html.Div(
-                    style={'flex': '1', 'minWidth': '180px'},
-                    children=[
-                        html.Label("Tipo de Gás", style={'fontSize': '12px', 'fontWeight': '500', 'color': '#64748b', 'marginBottom': '6px', 'display': 'block'}),
-                        dcc.Dropdown(
-                            id='tipo-gas-filter',
-                            options=[{'label': t, 'value': t} for t in df['tipo_gas'].unique()] if 'tipo_gas' in df.columns else [],
-                            value=None,
-                            placeholder="Selecione...",
-                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
-                        )
-                    ]
-                ),
-                html.Div(
-                    style={'flex': '1', 'minWidth': '180px'},
-                    children=[
-                        html.Label("Status", style={'fontSize': '12px', 'fontWeight': '500', 'color': '#64748b', 'marginBottom': '6px', 'display': 'block'}),
-                        dcc.Dropdown(
-                            id='status-filter',
-                            options=[{'label': s, 'value': s} for s in df['status_name'].unique()] if 'status_name' in df.columns else [],
-                            value=None,
-                            placeholder="Selecione...",
-                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
-                        )
-                    ]
-                ),
-                html.Div(
-                    style={'flex': '1', 'minWidth': '180px'},
-                    children=[
-                        html.Label("Justificativa", style={'fontSize': '12px', 'fontWeight': '500', 'color': '#64748b', 'marginBottom': '6px', 'display': 'block'}),
-                        dcc.Dropdown(
-                            id='justificativa-filter',
-                            options=[{'label': j, 'value': j} for j in df['justificativa'].unique()] if 'justificativa' in df.columns else [],
-                            value=None,
-                            placeholder="Selecione...",
-                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
-                        )
-                    ]
-                ),
-                html.Div(
-                    style={'flex': '1', 'minWidth': '180px'},
-                    children=[
-                        html.Label("Período", style={'fontSize': '12px', 'fontWeight': '500', 'color': '#64748b', 'marginBottom': '6px', 'display': 'block'}),
-                        dcc.DatePickerRange(
-                            id='date-filter',
-                            start_date=df['created_at'].min() if 'created_at' in df.columns else None,
-                            end_date=df['created_at'].max() if 'created_at' in df.columns else None,
-                            style={'width': '100%', 'fontSize': '13px'}
                         )
                     ]
                 )
