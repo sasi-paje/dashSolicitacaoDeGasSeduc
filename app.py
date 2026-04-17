@@ -118,21 +118,21 @@ app.layout = html.Div(
                     style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'},
                     children=[
                         html.P("Total de Solicitações", style={'fontSize': '14px', 'color': '#94a3b8', 'margin': '0 0 8px 0'}),
-                        html.H2(f"{len(df)}", style={'fontSize': '32px', 'fontWeight': '700', 'margin': '0', 'color': '#f8fafc'})
+                        html.H2(f"{len(df)}", style={'fontSize': '32px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
                     ]
                 ),
                 html.Div(
                     style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'},
                     children=[
                         html.P("Total de Botijões", style={'fontSize': '14px', 'color': '#94a3b8', 'margin': '0 0 8px 0'}),
-                        html.H2(f"{df['quantidade'].sum() if 'quantidade' in df.columns else 0}", style={'fontSize': '32px', 'fontWeight': '700', 'margin': '0', 'color': '#f8fafc'})
+                        html.H2(f"{df['quantidade'].sum() if 'quantidade' in df.columns else 0}", style={'fontSize': '32px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
                     ]
                 ),
                 html.Div(
                     style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'},
                     children=[
                         html.P("Unidades Solicitantes", style={'fontSize': '14px', 'color': '#94a3b8', 'margin': '0 0 8px 0'}),
-                        html.H2(f"{df['unidade'].nunique() if 'unidade' in df.columns else 0}", style={'fontSize': '32px', 'fontWeight': '700', 'margin': '0', 'color': '#f8fafc'})
+                        html.H2(f"{df['unidade'].nunique() if 'unidade' in df.columns else 0}", style={'fontSize': '32px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
                     ]
                 )
             ]
