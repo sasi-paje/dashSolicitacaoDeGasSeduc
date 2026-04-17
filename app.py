@@ -233,7 +233,7 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         filtered_df.groupby('tipo_gas').size().reset_index(name='count'),
         x='tipo_gas',
         y='count',
-        color_discrete_sequence=['#22c55e']
+        color_discrete_sequence=['#6366f1']
     )
     tipo_gas_chart.update_layout(
         paper_bgcolor='#FFFFFF',
@@ -247,7 +247,7 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         filtered_df.groupby('justificativa').size().reset_index(name='count'),
         x='justificativa',
         y='count',
-        color_discrete_sequence=['#f59e0b']
+        color_discrete_sequence=['#10b981']
     )
     justificativa_chart.update_layout(
         paper_bgcolor='#FFFFFF',
