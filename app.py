@@ -23,89 +23,196 @@ app.layout = html.Div(
         'color': '#1e293b'
     },
     children=[
-        html.Header(
-            style={'marginBottom': '30px'},
+        html.Link(
+            href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
+            rel='stylesheet'
+        ),
+
+        html.Div(
+            style={
+                'display': 'flex',
+                'alignItems': 'center',
+                'justifyContent': 'space-between',
+                'marginBottom': '24px'
+            },
             children=[
-                html.H1(
-                    "Dashboard de Solicitação de Gás",
-                    style={'fontSize': '28px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'}
+                html.Div(
+                    style={'display': 'flex', 'alignItems': 'center', 'gap': '12px'},
+                    children=[
+                        html.I(
+                            className="bi bi-gear-wide-connected",
+                            style={'fontSize': '28px', 'color': '#6366f1'}
+                        ),
+                        html.Div(
+                            children=[
+                                html.H1(
+                                    "Solicitações de Gás",
+                                    style={'fontSize': '22px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'}
+                                ),
+                                html.P(
+                                    f"Atualizado hoje às {datetime.now().strftime('%H:%M')}",
+                                    style={'fontSize': '13px', 'color': '#64748b', 'margin': '4px 0 0 0'}
+                                )
+                            ]
+                        )
+                    ]
                 ),
-                html.P(
-                    f"Atualizado em {datetime.now().strftime('%d/%m/%Y %H:%M')}",
-                    style={'fontSize': '14px', 'color': '#64748b', 'margin': '8px 0 0 0'}
+                html.Div(
+                    style={'display': 'flex', 'alignItems': 'center', 'gap': '8px'},
+                    children=[
+                        html.Span(
+                            style={
+                                'width': '8px',
+                                'height': '8px',
+                                'backgroundColor': '#22c55e',
+                                'borderRadius': '50%',
+                                'display': 'inline-block'
+                            }
+                        ),
+                        html.Span(
+                            "Dados em tempo real",
+                            style={'fontSize': '13px', 'color': '#64748b'}
+                        )
+                    ]
                 )
             ]
         ),
 
         html.Div(
-                    style={
-                        'display': 'flex',
-                        'gap': '16px',
-                        'marginBottom': '24px',
-                        'flexWrap': 'wrap',
-                        'backgroundColor': '#FFFFFF',
-                        'padding': '20px',
-                        'borderRadius': '12px',
-                        'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'
-                    },
+            style={
+                'display': 'grid',
+                'gridTemplateColumns': 'repeat(3, 1fr)',
+                'gap': '16px',
+                'marginBottom': '24px'
+            },
             children=[
                 html.Div(
-                    style={'flex': '1', 'minWidth': '200px'},
+                    style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)', 'borderLeft': '4px solid #6366f1'},
                     children=[
-                        html.Label("Município", style={'fontSize': '14px', 'color': '#64748b', 'marginBottom': '8px', 'display': 'block'}),
+                        html.Div(
+                            style={'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center'},
+                            children=[
+                                html.Div(
+                                    children=[
+                                        html.P("Total de Solicitações", style={'fontSize': '13px', 'color': '#64748b', 'margin': '0 0 4px 0'}),
+                                        html.H2(f"{len(df)}", style={'fontSize': '28px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
+                                    ]
+                                ),
+                                html.I(className="bi bi-file-text", style={'fontSize': '24px', 'color': '#6366f1', 'opacity': '0.7'})
+                            ]
+                        )
+                    ]
+                ),
+                html.Div(
+                    style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)', 'borderLeft': '4px solid #10b981'},
+                    children=[
+                        html.Div(
+                            style={'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center'},
+                            children=[
+                                html.Div(
+                                    children=[
+                                        html.P("Total de Botijões", style={'fontSize': '13px', 'color': '#64748b', 'margin': '0 0 4px 0'}),
+                                        html.H2(f"{df['quantidade'].sum() if 'quantidade' in df.columns else 0}", style={'fontSize': '28px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
+                                    ]
+                                ),
+                                html.I(className="bi bi-box-seam", style={'fontSize': '24px', 'color': '#10b981', 'opacity': '0.7'})
+                            ]
+                        )
+                    ]
+                ),
+                html.Div(
+                    style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)', 'borderLeft': '4px solid #f59e0b'},
+                    children=[
+                        html.Div(
+                            style={'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center'},
+                            children=[
+                                html.Div(
+                                    children=[
+                                        html.P("Unidades Solicitantes", style={'fontSize': '13px', 'color': '#64748b', 'margin': '0 0 4px 0'}),
+                                        html.H2(f"{df['unidade'].nunique() if 'unidade' in df.columns else 0}", style={'fontSize': '28px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
+                                    ]
+                                ),
+                                html.I(className="bi bi-building", style={'fontSize': '24px', 'color': '#f59e0b', 'opacity': '0.7'})
+                            ]
+                        )
+                    ]
+                )
+            ]
+        ),
+
+        html.Div(
+            style={
+                'display': 'flex',
+                'gap': '16px',
+                'marginBottom': '24px',
+                'flexWrap': 'wrap',
+                'backgroundColor': '#FFFFFF',
+                'padding': '16px 20px',
+                'borderRadius': '12px',
+                'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'
+            },
+            children=[
+                html.Div(
+                    style={'flex': '1', 'minWidth': '180px'},
+                    children=[
+                        html.Label("Município", style={'fontSize': '12px', 'fontWeight': '500', 'color': '#64748b', 'marginBottom': '6px', 'display': 'block'}),
                         dcc.Dropdown(
                             id='municipio-filter',
                             options=[{'label': m, 'value': m} for m in df['municipio'].unique()] if 'municipio' in df.columns else [],
                             value=None,
-                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b'}
+                            placeholder="Selecione...",
+                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
                         )
                     ]
                 ),
                 html.Div(
-                    style={'flex': '1', 'minWidth': '200px'},
+                    style={'flex': '1', 'minWidth': '180px'},
                     children=[
-                        html.Label("Tipo de Gás", style={'fontSize': '14px', 'color': '#64748b', 'marginBottom': '8px', 'display': 'block'}),
+                        html.Label("Tipo de Gás", style={'fontSize': '12px', 'fontWeight': '500', 'color': '#64748b', 'marginBottom': '6px', 'display': 'block'}),
                         dcc.Dropdown(
                             id='tipo-gas-filter',
                             options=[{'label': t, 'value': t} for t in df['tipo_gas'].unique()] if 'tipo_gas' in df.columns else [],
                             value=None,
-                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b'}
+                            placeholder="Selecione...",
+                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
                         )
                     ]
                 ),
                 html.Div(
-                    style={'flex': '1', 'minWidth': '200px'},
+                    style={'flex': '1', 'minWidth': '180px'},
                     children=[
-                        html.Label("Status", style={'fontSize': '14px', 'color': '#64748b', 'marginBottom': '8px', 'display': 'block'}),
+                        html.Label("Status", style={'fontSize': '12px', 'fontWeight': '500', 'color': '#64748b', 'marginBottom': '6px', 'display': 'block'}),
                         dcc.Dropdown(
                             id='status-filter',
                             options=[{'label': s, 'value': s} for s in df['status_name'].unique()] if 'status_name' in df.columns else [],
                             value=None,
-                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b'}
+                            placeholder="Selecione...",
+                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
                         )
                     ]
                 ),
                 html.Div(
-                    style={'flex': '1', 'minWidth': '200px'},
+                    style={'flex': '1', 'minWidth': '180px'},
                     children=[
-                        html.Label("Justificativa", style={'fontSize': '14px', 'color': '#64748b', 'marginBottom': '8px', 'display': 'block'}),
+                        html.Label("Justificativa", style={'fontSize': '12px', 'fontWeight': '500', 'color': '#64748b', 'marginBottom': '6px', 'display': 'block'}),
                         dcc.Dropdown(
                             id='justificativa-filter',
                             options=[{'label': j, 'value': j} for j in df['justificativa'].unique()] if 'justificativa' in df.columns else [],
                             value=None,
-                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b'}
+                            placeholder="Selecione...",
+                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
                         )
                     ]
                 ),
                 html.Div(
-                    style={'flex': '1', 'minWidth': '200px'},
+                    style={'flex': '1', 'minWidth': '180px'},
                     children=[
-                        html.Label("Período", style={'fontSize': '14px', 'color': '#64748b', 'marginBottom': '8px', 'display': 'block'}),
+                        html.Label("Período", style={'fontSize': '12px', 'fontWeight': '500', 'color': '#64748b', 'marginBottom': '6px', 'display': 'block'}),
                         dcc.DatePickerRange(
                             id='date-filter',
                             start_date=df['created_at'].min() if 'created_at' in df.columns else None,
                             end_date=df['created_at'].max() if 'created_at' in df.columns else None,
-                            style={'width': '100%'}
+                            style={'width': '100%', 'fontSize': '13px'}
                         )
                     ]
                 )
@@ -113,72 +220,62 @@ app.layout = html.Div(
         ),
 
         html.Div(
-            style={'display': 'grid', 'gridTemplateColumns': 'repeat(3, 1fr)', 'gap': '16px', 'marginBottom': '24px'},
+            style={'display': 'flex', 'flexDirection': 'column', 'gap': '20px'},
             children=[
                 html.Div(
-                    style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'},
+                    style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'},
                     children=[
-                        html.P("Total de Solicitações", style={'fontSize': '14px', 'color': '#94a3b8', 'margin': '0 0 8px 0'}),
-                        html.H2(f"{len(df)}", style={'fontSize': '32px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
-                    ]
-                ),
-                html.Div(
-                    style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'},
-                    children=[
-                        html.P("Total de Botijões", style={'fontSize': '14px', 'color': '#94a3b8', 'margin': '0 0 8px 0'}),
-                        html.H2(f"{df['quantidade'].sum() if 'quantidade' in df.columns else 0}", style={'fontSize': '32px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
-                    ]
-                ),
-                html.Div(
-                    style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'},
-                    children=[
-                        html.P("Unidades Solicitantes", style={'fontSize': '14px', 'color': '#94a3b8', 'margin': '0 0 8px 0'}),
-                        html.H2(f"{df['unidade'].nunique() if 'unidade' in df.columns else 0}", style={'fontSize': '32px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
-                    ]
-                )
-            ]
-        ),
-
-        html.Div(
-            style={'display': 'flex', 'flexDirection': 'column', 'gap': '24px'},
-            children=[
-                html.Div(
-                    style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'},
-                    children=[
-                        html.H3("Solicitações por Data", style={'fontSize': '18px', 'fontWeight': '600', 'margin': '0 0 20px 0', 'color': '#1e293b'}),
+                        html.Div(
+                            style={'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center', 'marginBottom': '16px'},
+                            children=[
+                                html.H3("Solicitações por Mês", style={'fontSize': '16px', 'fontWeight': '600', 'margin': '0', 'color': '#1e293b'}),
+                                html.Div(
+                                    style={'display': 'flex', 'gap': '12px'},
+                                    children=[
+                                        html.Span(
+                                            style={'display': 'flex', 'alignItems': 'center', 'gap': '4px', 'fontSize': '12px', 'color': '#64748b'}
+                                        ),
+                                        html.Span(style={'width': '12px', 'height': '12px', 'backgroundColor': '#f59e0b', 'borderRadius': '2px'}),
+                                        html.Span("2025", style={'fontSize': '12px', 'color': '#64748b', 'marginRight': '8px'}),
+                                        html.Span(style={'width': '12px', 'height': '12px', 'backgroundColor': '#6366f1', 'borderRadius': '2px'}),
+                                        html.Span("2026", style={'fontSize': '12px', 'color': '#64748b'})
+                                    ]
+                                )
+                            ]
+                        ),
                         dcc.Graph(id='date-chart')
                     ]
                 ),
                 html.Div(
-                    style={'display': 'grid', 'gridTemplateColumns': '1fr 1fr', 'gap': '24px'},
+                    style={'display': 'grid', 'gridTemplateColumns': '1fr 1fr', 'gap': '20px'},
                     children=[
                         html.Div(
-                            style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'},
+                            style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'},
                             children=[
-                                html.H3("Por Tipo de Gás", style={'fontSize': '18px', 'fontWeight': '600', 'margin': '0 0 20px 0', 'color': '#1e293b'}),
+                                html.H3("Por Tipo de Gás", style={'fontSize': '16px', 'fontWeight': '600', 'margin': '0 0 16px 0', 'color': '#1e293b'}),
                                 dcc.Graph(id='tipo-gas-chart')
                             ]
                         ),
                         html.Div(
-                            style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'},
+                            style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'},
                             children=[
-                                html.H3("Por Justificativa", style={'fontSize': '18px', 'fontWeight': '600', 'margin': '0 0 20px 0', 'color': '#1e293b'}),
+                                html.H3("Por Justificativa", style={'fontSize': '16px', 'fontWeight': '600', 'margin': '0 0 16px 0', 'color': '#1e293b'}),
                                 dcc.Graph(id='justificativa-chart')
                             ]
                         )
                     ]
                 ),
                 html.Div(
-                    style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'},
+                    style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'},
                     children=[
-                        html.H3("Por Status", style={'fontSize': '18px', 'fontWeight': '600', 'margin': '0 0 20px 0', 'color': '#1e293b'}),
+                        html.H3("Por Status", style={'fontSize': '16px', 'fontWeight': '600', 'margin': '0 0 16px 0', 'color': '#1e293b'}),
                         dcc.Graph(id='status-chart')
                     ]
                 ),
                 html.Div(
-                    style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.1)'},
+                    style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'},
                     children=[
-                        html.H3("Top 10 Unidades com Mais Solicitações", style={'fontSize': '18px', 'fontWeight': '600', 'margin': '0 0 20px 0', 'color': '#1e293b'}),
+                        html.H3("Top 10 Unidades", style={'fontSize': '16px', 'fontWeight': '600', 'margin': '0 0 16px 0', 'color': '#1e293b'}),
                         dcc.Graph(id='unidades-chart')
                     ]
                 )
@@ -217,9 +314,6 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         filtered_df = filtered_df[filtered_df['created_at'] <= pd.to_datetime(end_date)]
 
     date_chart = go.Figure()
-    df['month'] = filtered_df['created_at'].dt.month
-    df['year'] = filtered_df['created_at'].dt.year
-
     months_order = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     month_labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
@@ -230,16 +324,20 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
             x=month_labels,
             y=year_data.values,
             name=str(year),
-            marker_color=color
+            marker_color=color,
+            hovertemplate='%{x}: %{y}<extra></extra>'
         ))
 
     date_chart.update_layout(
         paper_bgcolor='#FFFFFF',
         plot_bgcolor='#FFFFFF',
         font_color='#1e293b',
-        xaxis=dict(gridcolor='#e2e8f0', color='#64748b'),
-        yaxis=dict(gridcolor='#e2e8f0', color='#64748b'),
-        barmode='group'
+        font=dict(size=12),
+        xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
+        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
+        barmode='group',
+        showlegend=True,
+        legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1)
     )
 
     tipo_gas_chart = px.bar(
@@ -248,12 +346,15 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         y='count',
         color_discrete_sequence=['#6366f1']
     )
+    tipo_gas_chart.update_traces(hovertemplate='%{x}: %{y}<extra></extra>')
     tipo_gas_chart.update_layout(
         paper_bgcolor='#FFFFFF',
         plot_bgcolor='#FFFFFF',
         font_color='#1e293b',
-        xaxis=dict(gridcolor='#e2e8f0', color='#64748b'),
-        yaxis=dict(gridcolor='#e2e8f0', color='#64748b')
+        font=dict(size=12),
+        xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
+        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
+        margin=dict(l=20, r=20, t=20, b=20)
     )
 
     justificativa_chart = px.bar(
@@ -262,12 +363,15 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         y='count',
         color_discrete_sequence=['#10b981']
     )
+    justificativa_chart.update_traces(hovertemplate='%{x}: %{y}<extra></extra>')
     justificativa_chart.update_layout(
         paper_bgcolor='#FFFFFF',
         plot_bgcolor='#FFFFFF',
         font_color='#1e293b',
-        xaxis=dict(gridcolor='#e2e8f0', color='#64748b'),
-        yaxis=dict(gridcolor='#e2e8f0', color='#64748b')
+        font=dict(size=12),
+        xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
+        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
+        margin=dict(l=20, r=20, t=20, b=20)
     )
 
     status_chart = px.bar(
@@ -277,12 +381,15 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         orientation='h',
         color_discrete_sequence=['#8b5cf6']
     )
+    status_chart.update_traces(hovertemplate='%{y}: %{x}<extra></extra>')
     status_chart.update_layout(
         paper_bgcolor='#FFFFFF',
         plot_bgcolor='#FFFFFF',
         font_color='#1e293b',
-        xaxis=dict(gridcolor='#e2e8f0', color='#64748b'),
-        yaxis=dict(gridcolor='#e2e8f0', color='#64748b')
+        font=dict(size=12),
+        xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
+        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
+        margin=dict(l=20, r=20, t=20, b=20)
     )
 
     top_unidades = filtered_df.groupby('unidade').size().reset_index(name='count').sort_values('count', ascending=False).nlargest(10, 'count')
@@ -293,12 +400,15 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         orientation='h',
         color_discrete_sequence=['#ec4899']
     )
+    unidades_chart.update_traces(hovertemplate='%{y}: %{x}<extra></extra>')
     unidades_chart.update_layout(
         paper_bgcolor='#FFFFFF',
         plot_bgcolor='#FFFFFF',
         font_color='#1e293b',
-        xaxis=dict(gridcolor='#e2e8f0', color='#64748b'),
-        yaxis=dict(gridcolor='#e2e8f0', color='#64748b')
+        font=dict(size=12),
+        xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
+        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
+        margin=dict(l=150, r=20, t=20, b=20)
     )
 
     return date_chart, tipo_gas_chart, justificativa_chart, status_chart, unidades_chart
