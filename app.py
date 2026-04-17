@@ -120,11 +120,31 @@ app.layout = html.Div(
                     style={'flex': '1', 'minWidth': '180px'},
                     children=[
                         html.Label("Período", style={'fontSize': '12px', 'fontWeight': '600', 'color': '#475569', 'marginBottom': '6px', 'display': 'block', 'textTransform': 'uppercase', 'letterSpacing': '0.5px'}),
-                        dcc.DatePickerRange(
-                            id='date-filter',
-                            start_date=df['created_at'].min() if 'created_at' in df.columns else None,
-                            end_date=df['created_at'].max() if 'created_at' in df.columns else None,
-                            style={'width': '100%', 'fontSize': '13px'}
+                        html.Div(
+                            style={'display': 'flex', 'gap': '8px', 'alignItems': 'center'},
+                            children=[
+                                dcc.DatePickerRange(
+                                    id='date-filter',
+                                    start_date=df['created_at'].min() if 'created_at' in df.columns else None,
+                                    end_date=df['created_at'].max() if 'created_at' in df.columns else None,
+                                    style={'width': '100%', 'fontSize': '13px'}
+                                ),
+                                html.Button(
+                                    'Limpar',
+                                    id='clear-filters-btn',
+                                    n_clicks=0,
+                                    style={
+                                        'padding': '6px 12px',
+                                        'fontSize': '12px',
+                                        'backgroundColor': '#ef4444',
+                                        'color': '#FFFFFF',
+                                        'border': 'none',
+                                        'borderRadius': '6px',
+                                        'cursor': 'pointer',
+                                        'fontWeight': '500'
+                                    }
+                                )
+                            ]
                         )
                     ]
                 )
@@ -281,15 +301,36 @@ def update_cards(municipio, tipo_gas, status, justificativa, start_date, end_dat
     if justificativa:
         filtered_df = filtered_df[filtered_df['justificativa'] == justificativa]
     if start_date:
-        filtered_df = filtered_df[filtered_df['created_at'] >= pd.to_datetime(start_date).tz_localize(None)]
+        filtered_df = filtered_df[filtered_df['created_at'] >= pd.to_datetime(start_date)]
     if end_date:
-        filtered_df = filtered_df[filtered_df['created_at'] <= pd.to_datetime(end_date).tz_localize(None)]
+        filtered_df = filtered_df[filtered_df['created_at'] <= pd.to_datetime(end_date)]
 
     total = len(filtered_df)
     botijes = int(filtered_df['quantidade'].sum()) if 'quantidade' in filtered_df.columns else 0
     unidades = filtered_df['unidade'].nunique() if 'unidade' in filtered_df.columns else 0
 
     return str(total), str(botijes), str(unidades)
+
+@app.callback(
+    [dash.dependencies.Output('municipio-filter', 'value'),
+     dash.dependencies.Output('tipo-gas-filter', 'value'),
+     dash.dependencies.Output('status-filter', 'value'),
+     dash.dependencies.Output('justificativa-filter', 'value'),
+     dash.dependencies.Output('date-filter', 'start_date'),
+     dash.dependencies.Output('date-filter', 'end_date')],
+    [dash.dependencies.Input('clear-filters-btn', 'n_clicks')],
+    [dash.dependencies.State('municipio-filter', 'value'),
+     dash.dependencies.State('tipo-gas-filter', 'value'),
+     dash.dependencies.State('status-filter', 'value'),
+     dash.dependencies.State('justificativa-filter', 'value'),
+     dash.dependencies.State('date-filter', 'start_date'),
+     dash.dependencies.State('date-filter', 'end_date')]
+)
+def clear_filters(n_clicks, municipio, tipo_gas, status, justificativa, start_date, end_date):
+    if n_clicks and n_clicks > 0:
+        return None, None, None, None, None, None
+
+    return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
 @app.callback(
     [dash.dependencies.Output('date-chart', 'figure'),
@@ -316,9 +357,9 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
     if justificativa:
         filtered_df = filtered_df[filtered_df['justificativa'] == justificativa]
     if start_date:
-        filtered_df = filtered_df[filtered_df['created_at'] >= pd.to_datetime(start_date).tz_localize(None)]
+        filtered_df = filtered_df[filtered_df['created_at'] >= pd.to_datetime(start_date)]
     if end_date:
-        filtered_df = filtered_df[filtered_df['created_at'] <= pd.to_datetime(end_date).tz_localize(None)]
+        filtered_df = filtered_df[filtered_df['created_at'] <= pd.to_datetime(end_date)]
 
     date_chart = go.Figure()
     months_order = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
