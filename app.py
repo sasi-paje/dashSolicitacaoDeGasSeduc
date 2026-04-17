@@ -33,7 +33,7 @@ def build_date_chart(filtered_df):
         year_data = filtered_df[filtered_df['created_at'].dt.year == year].groupby(filtered_df['created_at'].dt.month).size().reindex(months_order, fill_value=0)
         color = '#f59e0b' if year == 2025 else '#6366f1' if year == 2026 else '#94a3b8'
         date_chart.add_trace(go.Bar(x=month_labels, y=year_data.values, name=str(year), marker_color=color, hovertemplate='%{x}: %{y}<extra></extra>'))
-    date_chart.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', font_color='#1e293b', font=dict(size=12), xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), barmode='group', showlegend=True, legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1))
+    date_chart.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', font_color='#1e293b', font=dict(size=12), xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), barmode='group', showlegend=False)
     return date_chart
 
 def build_tipo_gas_chart(filtered_df):
