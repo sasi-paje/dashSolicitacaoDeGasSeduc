@@ -9,18 +9,64 @@ from datetime import datetime
 df = get_gas_requests()
 df = treat_data(df)
 
-def create_initial_figure():
-    fig = go.Figure()
-    fig.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font_color='#1e293b',
-        xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8'),
-        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8')
-    )
-    return fig
+def get_filtered_df(municipio, tipo_gas, status, justificativa, start_date, end_date):
+    filtered_df = df.copy()
+    if municipio:
+        filtered_df = filtered_df[filtered_df['municipio'] == municipio]
+    if tipo_gas:
+        filtered_df = filtered_df[filtered_df['tipo_gas'] == tipo_gas]
+    if status:
+        filtered_df = filtered_df[filtered_df['status_name'] == status]
+    if justificativa:
+        filtered_df = filtered_df[filtered_df['justificativa'] == justificativa]
+    if start_date:
+        filtered_df = filtered_df[filtered_df['created_at'] >= pd.to_datetime(start_date)]
+    if end_date:
+        filtered_df = filtered_df[filtered_df['created_at'] <= pd.to_datetime(end_date)]
+    return filtered_df
 
-initial_figure = create_initial_figure()
+def build_date_chart(filtered_df):
+    date_chart = go.Figure()
+    months_order = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    month_labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    for year in sorted(filtered_df['created_at'].dt.year.unique()):
+        year_data = filtered_df[filtered_df['created_at'].dt.year == year].groupby(filtered_df['created_at'].dt.month).size().reindex(months_order, fill_value=0)
+        color = '#f59e0b' if year == 2025 else '#6366f1' if year == 2026 else '#94a3b8'
+        date_chart.add_trace(go.Bar(x=month_labels, y=year_data.values, name=str(year), marker_color=color, hovertemplate='%{x}: %{y}<extra></extra>'))
+    date_chart.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', font_color='#1e293b', font=dict(size=12), xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), barmode='group', showlegend=True, legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1))
+    return date_chart
+
+def build_tipo_gas_chart(filtered_df):
+    tipo_gas_chart = px.bar(filtered_df.groupby('tipo_gas').size().reset_index(name='count'), x='tipo_gas', y='count', color_discrete_sequence=['#6366f1'])
+    tipo_gas_chart.update_traces(hovertemplate='%{x}: %{y}<extra></extra>')
+    tipo_gas_chart.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', font_color='#1e293b', font=dict(size=12), xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), margin=dict(l=20, r=20, t=20, b=20), showlegend=False)
+    return tipo_gas_chart
+
+def build_justificativa_chart(filtered_df):
+    justificativa_chart = px.bar(filtered_df.groupby('justificativa').size().reset_index(name='count'), x='justificativa', y='count', color_discrete_sequence=['#10b981'])
+    justificativa_chart.update_traces(hovertemplate='%{x}: %{y}<extra></extra>')
+    justificativa_chart.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', font_color='#1e293b', font=dict(size=12), xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), margin=dict(l=20, r=20, t=20, b=20), showlegend=False)
+    return justificativa_chart
+
+def build_status_chart(filtered_df):
+    status_df = filtered_df.groupby('status_name').size().reset_index(name='count').sort_values('count', ascending=False)
+    status_chart = px.bar(status_df, x='count', y='status_name', orientation='h', color_discrete_sequence=['#8b5cf6'], text='count')
+    status_chart.update_traces(textposition='outside', hovertemplate='%{y}: %{x}<extra></extra>')
+    status_chart.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', font_color='#1e293b', font=dict(size=12), xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9', autorange='reversed'), margin=dict(l=20, r=40, t=20, b=20), showlegend=False)
+    return status_chart
+
+def build_unidades_chart(filtered_df):
+    top_unidades = filtered_df.groupby('unidade').size().reset_index(name='count').sort_values('count', ascending=False).nlargest(10, 'count')
+    unidades_chart = px.bar(top_unidades, x='count', y='unidade', orientation='h', color_discrete_sequence=['#ec4899'], text='count')
+    unidades_chart.update_traces(textposition='outside', hovertemplate='%{y}: %{x}<extra></extra>')
+    unidades_chart.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', font_color='#1e293b', font=dict(size=12), xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9', autorange='reversed'), margin=dict(l=150, r=20, t=20, b=20), showlegend=False)
+    return unidades_chart
+
+initial_date_chart = build_date_chart(df)
+initial_tipo_gas_chart = build_tipo_gas_chart(df)
+initial_justificativa_chart = build_justificativa_chart(df)
+initial_status_chart = build_status_chart(df)
+initial_unidades_chart = build_unidades_chart(df)
 
 app = dash.Dash(__name__)
 app.title = "Dashboard - Solicitação de Gás"
@@ -250,7 +296,7 @@ app.layout = html.Div(
                                 )
                             ]
                         ),
-                        dcc.Graph(id='date-chart', figure=initial_figure)
+                        dcc.Graph(id='date-chart', figure=initial_date_chart)
                     ]
                 ),
                 html.Div(
@@ -260,14 +306,14 @@ app.layout = html.Div(
                             style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'},
                             children=[
                                 html.H3("Por Tipo de Gás", style={'fontSize': '16px', 'fontWeight': '600', 'margin': '0 0 16px 0', 'color': '#1e293b'}),
-                                dcc.Graph(id='tipo-gas-chart', figure=initial_figure)
+                                dcc.Graph(id='tipo-gas-chart', figure=initial_tipo_gas_chart)
                             ]
                         ),
                         html.Div(
                             style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'},
                             children=[
                                 html.H3("Por Justificativa", style={'fontSize': '16px', 'fontWeight': '600', 'margin': '0 0 16px 0', 'color': '#1e293b'}),
-                                dcc.Graph(id='justificativa-chart', figure=initial_figure)
+                                dcc.Graph(id='justificativa-chart', figure=initial_justificativa_chart)
                             ]
                         )
                     ]
@@ -276,14 +322,14 @@ app.layout = html.Div(
                     style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'},
                     children=[
                         html.H3("Por Status", style={'fontSize': '16px', 'fontWeight': '600', 'margin': '0 0 16px 0', 'color': '#1e293b'}),
-                        dcc.Graph(id='status-chart', figure=initial_figure)
+                        dcc.Graph(id='status-chart', figure=initial_status_chart)
                     ]
                 ),
                 html.Div(
                     style={'background': '#FFFFFF', 'borderRadius': '12px', 'padding': '20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.08)'},
                     children=[
                         html.H3("Top 10 Unidades", style={'fontSize': '16px', 'fontWeight': '600', 'margin': '0 0 16px 0', 'color': '#1e293b'}),
-                        dcc.Graph(id='unidades-chart', figure=initial_figure)
+                        dcc.Graph(id='unidades-chart', figure=initial_unidades_chart)
                     ]
                 )
             ]
@@ -359,126 +405,13 @@ def clear_filters(n_clicks, municipio, tipo_gas, status, justificativa, start_da
      dash.dependencies.Input('date-filter', 'end_date')]
 )
 def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_date):
-    filtered_df = df.copy()
+    filtered_df = get_filtered_df(municipio, tipo_gas, status, justificativa, start_date, end_date)
 
-    if municipio:
-        filtered_df = filtered_df[filtered_df['municipio'] == municipio]
-    if tipo_gas:
-        filtered_df = filtered_df[filtered_df['tipo_gas'] == tipo_gas]
-    if status:
-        filtered_df = filtered_df[filtered_df['status_name'] == status]
-    if justificativa:
-        filtered_df = filtered_df[filtered_df['justificativa'] == justificativa]
-    if start_date:
-        filtered_df = filtered_df[filtered_df['created_at'] >= pd.to_datetime(start_date)]
-    if end_date:
-        filtered_df = filtered_df[filtered_df['created_at'] <= pd.to_datetime(end_date)]
-
-    date_chart = go.Figure()
-    months_order = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    month_labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
-
-    for year in sorted(filtered_df['created_at'].dt.year.unique()):
-        year_data = filtered_df[filtered_df['created_at'].dt.year == year].groupby(filtered_df['created_at'].dt.month).size().reindex(months_order, fill_value=0)
-        color = '#f59e0b' if year == 2025 else '#6366f1' if year == 2026 else '#94a3b8'
-        date_chart.add_trace(go.Bar(
-            x=month_labels,
-            y=year_data.values,
-            name=str(year),
-            marker_color=color,
-            hovertemplate='%{x}: %{y}<extra></extra>'
-        ))
-
-    date_chart.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font_color='#1e293b',
-        font=dict(size=12),
-        xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
-        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
-        barmode='group',
-        showlegend=True,
-        legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1)
-    )
-
-    tipo_gas_chart = px.bar(
-        filtered_df.groupby('tipo_gas').size().reset_index(name='count'),
-        x='tipo_gas',
-        y='count',
-        color_discrete_sequence=['#6366f1']
-    )
-    tipo_gas_chart.update_traces(hovertemplate='%{x}: %{y}<extra></extra>')
-    tipo_gas_chart.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font_color='#1e293b',
-        font=dict(size=12),
-        xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
-        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
-        margin=dict(l=20, r=20, t=20, b=20),
-        showlegend=False
-    )
-
-    justificativa_chart = px.bar(
-        filtered_df.groupby('justificativa').size().reset_index(name='count'),
-        x='justificativa',
-        y='count',
-        color_discrete_sequence=['#10b981']
-    )
-    justificativa_chart.update_traces(hovertemplate='%{x}: %{y}<extra></extra>')
-    justificativa_chart.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font_color='#1e293b',
-        font=dict(size=12),
-        xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
-        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
-        margin=dict(l=20, r=20, t=20, b=20),
-        showlegend=False
-    )
-
-    status_df = filtered_df.groupby('status_name').size().reset_index(name='count').sort_values('count', ascending=False)
-
-    status_chart = px.bar(
-        status_df,
-        x='count',
-        y='status_name',
-        orientation='h',
-        color_discrete_sequence=['#8b5cf6'],
-        text='count'
-    )
-    status_chart.update_traces(textposition='outside', hovertemplate='%{y}: %{x}<extra></extra>')
-    status_chart.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font_color='#1e293b',
-        font=dict(size=12),
-        xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
-        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9', autorange='reversed'),
-        margin=dict(l=20, r=40, t=20, b=20),
-        showlegend=False
-    )
-
-    top_unidades = filtered_df.groupby('unidade').size().reset_index(name='count').sort_values('count', ascending=False).nlargest(10, 'count')
-    unidades_chart = px.bar(
-        top_unidades,
-        x='count',
-        y='unidade',
-        orientation='h',
-        color_discrete_sequence=['#ec4899'],
-        text='count'
-    )
-    unidades_chart.update_traces(textposition='outside', hovertemplate='%{y}: %{x}<extra></extra>')
-    unidades_chart.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font_color='#1e293b',
-        font=dict(size=12),
-        xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'),
-        yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9', autorange='reversed'),
-        margin=dict(l=150, r=20, t=20, b=20),
-        showlegend=False
-    )
+    date_chart = build_date_chart(filtered_df)
+    tipo_gas_chart = build_tipo_gas_chart(filtered_df)
+    justificativa_chart = build_justificativa_chart(filtered_df)
+    status_chart = build_status_chart(filtered_df)
+    unidades_chart = build_unidades_chart(filtered_df)
 
     return date_chart, tipo_gas_chart, justificativa_chart, status_chart, unidades_chart
 
