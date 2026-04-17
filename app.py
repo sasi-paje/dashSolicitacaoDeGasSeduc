@@ -1,6 +1,7 @@
 import dash
 from dash import dcc, html
 import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
 from treatment import get_gas_requests, treat_data
 from datetime import datetime
@@ -215,18 +216,30 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
     if end_date:
         filtered_df = filtered_df[filtered_df['created_at'] <= pd.to_datetime(end_date)]
 
-    date_chart = px.bar(
-        filtered_df.groupby(filtered_df['created_at'].dt.date).size().reset_index(name='count'),
-        x='created_at',
-        y='count',
-        color_discrete_sequence=['#6366f1']
-    )
+    date_chart = go.Figure()
+    df['month'] = filtered_df['created_at'].dt.month
+    df['year'] = filtered_df['created_at'].dt.year
+
+    months_order = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    month_labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+
+    for year in sorted(filtered_df['created_at'].dt.year.unique()):
+        year_data = filtered_df[filtered_df['created_at'].dt.year == year].groupby(filtered_df['created_at'].dt.month).size().reindex(months_order, fill_value=0)
+        color = '#f59e0b' if year == 2025 else '#6366f1' if year == 2026 else '#94a3b8'
+        date_chart.add_trace(go.Bar(
+            x=month_labels,
+            y=year_data.values,
+            name=str(year),
+            marker_color=color
+        ))
+
     date_chart.update_layout(
         paper_bgcolor='#FFFFFF',
         plot_bgcolor='#FFFFFF',
         font_color='#1e293b',
         xaxis=dict(gridcolor='#e2e8f0', color='#64748b'),
-        yaxis=dict(gridcolor='#e2e8f0', color='#64748b')
+        yaxis=dict(gridcolor='#e2e8f0', color='#64748b'),
+        barmode='group'
     )
 
     tipo_gas_chart = px.bar(
