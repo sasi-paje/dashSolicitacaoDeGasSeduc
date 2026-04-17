@@ -374,14 +374,17 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         margin=dict(l=20, r=20, t=20, b=20)
     )
 
+    status_df = filtered_df.groupby('status_name').size().reset_index(name='count').sort_values('count', ascending=False)
+
     status_chart = px.bar(
-        filtered_df.groupby('status_name').size().reset_index(name='count'),
+        status_df,
         x='count',
         y='status_name',
         orientation='h',
-        color_discrete_sequence=['#8b5cf6']
+        color_discrete_sequence=['#8b5cf6'],
+        text='count'
     )
-    status_chart.update_traces(hovertemplate='%{y}: %{x}<extra></extra>')
+    status_chart.update_traces(textposition='outside', hovertemplate='%{y}: %{x}<extra></extra>')
     status_chart.update_layout(
         paper_bgcolor='#FFFFFF',
         plot_bgcolor='#FFFFFF',
