@@ -15,7 +15,7 @@ def treat_data(df):
     df = df.copy()
 
     if 'created_at' in df.columns:
-        df['created_at'] = pd.to_datetime(df['created_at'])
+        df['created_at'] = pd.to_datetime(df['created_at']).dt.tz_localize(None)
 
     return df
 

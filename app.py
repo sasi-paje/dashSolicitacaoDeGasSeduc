@@ -148,7 +148,7 @@ app.layout = html.Div(
                                 html.Div(
                                     children=[
                                         html.P("Total de Solicitações", style={'fontSize': '13px', 'color': '#64748b', 'margin': '0 0 4px 0'}),
-                                        html.H2(f"{len(df)}", style={'fontSize': '28px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
+                                        html.H2(id='total-solicitacoes', children=f"{len(df)}", style={'fontSize': '28px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
                                     ]
                                 ),
                                 html.I(className="bi bi-file-text", style={'fontSize': '24px', 'color': '#6366f1', 'opacity': '0.7'})
@@ -165,7 +165,7 @@ app.layout = html.Div(
                                 html.Div(
                                     children=[
                                         html.P("Total de Botijões", style={'fontSize': '13px', 'color': '#64748b', 'margin': '0 0 4px 0'}),
-                                        html.H2(f"{df['quantidade'].sum() if 'quantidade' in df.columns else 0}", style={'fontSize': '28px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
+                                        html.H2(id='total-botijes', children=f"{df['quantidade'].sum() if 'quantidade' in df.columns else 0}", style={'fontSize': '28px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
                                     ]
                                 ),
                                 html.I(className="bi bi-box-seam", style={'fontSize': '24px', 'color': '#10b981', 'opacity': '0.7'})
@@ -182,7 +182,7 @@ app.layout = html.Div(
                                 html.Div(
                                     children=[
                                         html.P("Unidades Solicitantes", style={'fontSize': '13px', 'color': '#64748b', 'margin': '0 0 4px 0'}),
-                                        html.H2(f"{df['unidade'].nunique() if 'unidade' in df.columns else 0}", style={'fontSize': '28px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
+                                        html.H2(id='unidades-solicitantes', children=f"{df['unidade'].nunique() if 'unidade' in df.columns else 0}", style={'fontSize': '28px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
                                     ]
                                 ),
                                 html.I(className="bi bi-building", style={'fontSize': '24px', 'color': '#f59e0b', 'opacity': '0.7'})
@@ -259,6 +259,39 @@ app.layout = html.Div(
 )
 
 @app.callback(
+    [dash.dependencies.Output('total-solicitacoes', 'children'),
+     dash.dependencies.Output('total-botijes', 'children'),
+     dash.dependencies.Output('unidades-solicitantes', 'children')],
+    [dash.dependencies.Input('municipio-filter', 'value'),
+     dash.dependencies.Input('tipo-gas-filter', 'value'),
+     dash.dependencies.Input('status-filter', 'value'),
+     dash.dependencies.Input('justificativa-filter', 'value'),
+     dash.dependencies.Input('date-filter', 'start_date'),
+     dash.dependencies.Input('date-filter', 'end_date')]
+)
+def update_cards(municipio, tipo_gas, status, justificativa, start_date, end_date):
+    filtered_df = df.copy()
+
+    if municipio:
+        filtered_df = filtered_df[filtered_df['municipio'] == municipio]
+    if tipo_gas:
+        filtered_df = filtered_df[filtered_df['tipo_gas'] == tipo_gas]
+    if status:
+        filtered_df = filtered_df[filtered_df['status_name'] == status]
+    if justificativa:
+        filtered_df = filtered_df[filtered_df['justificativa'] == justificativa]
+    if start_date:
+        filtered_df = filtered_df[filtered_df['created_at'] >= pd.to_datetime(start_date).tz_localize(None)]
+    if end_date:
+        filtered_df = filtered_df[filtered_df['created_at'] <= pd.to_datetime(end_date).tz_localize(None)]
+
+    total = len(filtered_df)
+    botijes = int(filtered_df['quantidade'].sum()) if 'quantidade' in filtered_df.columns else 0
+    unidades = filtered_df['unidade'].nunique() if 'unidade' in filtered_df.columns else 0
+
+    return str(total), str(botijes), str(unidades)
+
+@app.callback(
     [dash.dependencies.Output('date-chart', 'figure'),
      dash.dependencies.Output('tipo-gas-chart', 'figure'),
      dash.dependencies.Output('justificativa-chart', 'figure'),
@@ -283,9 +316,9 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
     if justificativa:
         filtered_df = filtered_df[filtered_df['justificativa'] == justificativa]
     if start_date:
-        filtered_df = filtered_df[filtered_df['created_at'] >= pd.to_datetime(start_date)]
+        filtered_df = filtered_df[filtered_df['created_at'] >= pd.to_datetime(start_date).tz_localize(None)]
     if end_date:
-        filtered_df = filtered_df[filtered_df['created_at'] <= pd.to_datetime(end_date)]
+        filtered_df = filtered_df[filtered_df['created_at'] <= pd.to_datetime(end_date).tz_localize(None)]
 
     date_chart = go.Figure()
     months_order = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
