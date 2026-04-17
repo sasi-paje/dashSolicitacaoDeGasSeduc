@@ -401,9 +401,10 @@ def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_da
         x='count',
         y='unidade',
         orientation='h',
-        color_discrete_sequence=['#ec4899']
+        color_discrete_sequence=['#ec4899'],
+        text='count'
     )
-    unidades_chart.update_traces(hovertemplate='%{y}: %{x}<extra></extra>')
+    unidades_chart.update_traces(textposition='outside', hovertemplate='%{y}: %{x}<extra></extra>')
     unidades_chart.update_layout(
         paper_bgcolor='#FFFFFF',
         plot_bgcolor='#FFFFFF',
