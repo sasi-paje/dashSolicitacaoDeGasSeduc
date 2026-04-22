@@ -9,10 +9,12 @@ from datetime import datetime
 df = get_gas_requests()
 df = treat_data(df)
 
-def get_filtered_df(municipio, tipo_gas, status, justificativa, start_date, end_date):
+def get_filtered_df(municipio, unidade, tipo_gas, status, justificativa, start_date, end_date):
     filtered_df = df.copy()
     if municipio:
         filtered_df = filtered_df[filtered_df['municipio'] == municipio]
+    if unidade:
+        filtered_df = filtered_df[filtered_df['unidade'] == unidade]
     if tipo_gas:
         filtered_df = filtered_df[filtered_df['tipo_gas'] == tipo_gas]
     if status:
@@ -32,20 +34,20 @@ def build_date_chart(filtered_df):
     for year in sorted(filtered_df['created_at'].dt.year.unique()):
         year_data = filtered_df[filtered_df['created_at'].dt.year == year].groupby(filtered_df['created_at'].dt.month).size().reindex(months_order, fill_value=0)
         color = '#f59e0b' if year == 2025 else '#6366f1' if year == 2026 else '#94a3b8'
-        date_chart.add_trace(go.Bar(x=month_labels, y=year_data.values, name=str(year), marker_color=color, hovertemplate='%{x}: %{y}<extra></extra>'))
+        date_chart.add_trace(go.Bar(x=month_labels, y=year_data.values, marker_color=color, text=year_data.values, textposition='outside', hovertemplate=f'{str(year)}: %{{x}}: %{{y}}<extra></extra>', showlegend=False))
     date_chart.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', font_color='#1e293b', font=dict(size=12), xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), barmode='group', showlegend=False)
     return date_chart
 
 def build_tipo_gas_chart(filtered_df):
-    tipo_gas_chart = px.bar(filtered_df.groupby('tipo_gas').size().reset_index(name='count'), x='tipo_gas', y='count', color_discrete_sequence=['#6366f1'])
-    tipo_gas_chart.update_traces(hovertemplate='%{x}: %{y}<extra></extra>')
-    tipo_gas_chart.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', font_color='#1e293b', font=dict(size=12), xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), margin=dict(l=20, r=20, t=20, b=20), showlegend=False)
+    tipo_gas_chart = px.bar(filtered_df.groupby('tipo_gas').size().reset_index(name='count'), x='tipo_gas', y='count', color_discrete_sequence=['#6366f1'], text='count')
+    tipo_gas_chart.update_traces(textposition='outside', hovertemplate='%{x}: %{y}<extra></extra>')
+    tipo_gas_chart.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', font_color='#1e293b', font=dict(size=12), xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), margin=dict(l=20, r=20, t=30, b=20), showlegend=False)
     return tipo_gas_chart
 
 def build_justificativa_chart(filtered_df):
-    justificativa_chart = px.bar(filtered_df.groupby('justificativa').size().reset_index(name='count'), x='justificativa', y='count', color_discrete_sequence=['#10b981'])
-    justificativa_chart.update_traces(hovertemplate='%{x}: %{y}<extra></extra>')
-    justificativa_chart.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', font_color='#1e293b', font=dict(size=12), xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), margin=dict(l=20, r=20, t=20, b=20), showlegend=False)
+    justificativa_chart = px.bar(filtered_df.groupby('justificativa').size().reset_index(name='count'), x='justificativa', y='count', color_discrete_sequence=['#10b981'], text='count')
+    justificativa_chart.update_traces(textposition='outside', hovertemplate='%{x}: %{y}<extra></extra>')
+    justificativa_chart.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', font_color='#1e293b', font=dict(size=12), xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), margin=dict(l=20, r=20, t=30, b=20), showlegend=False)
     return justificativa_chart
 
 def build_status_chart(filtered_df):
@@ -130,6 +132,19 @@ app.layout = html.Div(
                         dcc.Dropdown(
                             id='municipio-filter',
                             options=[{'label': m, 'value': m} for m in df['municipio'].unique()] if 'municipio' in df.columns else [],
+                            value=None,
+                            placeholder="Selecione...",
+                            style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
+                        )
+                    ]
+                ),
+                html.Div(
+                    style={'flex': '1', 'minWidth': '180px'},
+                    children=[
+                        html.Label("Unidade", style={'fontSize': '12px', 'fontWeight': '600', 'color': '#475569', 'marginBottom': '6px', 'display': 'block', 'textTransform': 'uppercase', 'letterSpacing': '0.5px'}),
+                        dcc.Dropdown(
+                            id='unidade-filter',
+                            options=[{'label': u, 'value': u} for u in df['unidade'].unique()] if 'unidade' in df.columns else [],
                             value=None,
                             placeholder="Selecione...",
                             style={'backgroundColor': '#FFFFFF', 'color': '#1e293b', 'fontSize': '13px'}
@@ -342,36 +357,23 @@ app.layout = html.Div(
      dash.dependencies.Output('total-botijes', 'children'),
      dash.dependencies.Output('unidades-solicitantes', 'children')],
     [dash.dependencies.Input('municipio-filter', 'value'),
+     dash.dependencies.Input('unidade-filter', 'value'),
      dash.dependencies.Input('tipo-gas-filter', 'value'),
      dash.dependencies.Input('status-filter', 'value'),
      dash.dependencies.Input('justificativa-filter', 'value'),
      dash.dependencies.Input('date-filter', 'start_date'),
      dash.dependencies.Input('date-filter', 'end_date')]
 )
-def update_cards(municipio, tipo_gas, status, justificativa, start_date, end_date):
-    filtered_df = df.copy()
-
-    if municipio:
-        filtered_df = filtered_df[filtered_df['municipio'] == municipio]
-    if tipo_gas:
-        filtered_df = filtered_df[filtered_df['tipo_gas'] == tipo_gas]
-    if status:
-        filtered_df = filtered_df[filtered_df['status_name'] == status]
-    if justificativa:
-        filtered_df = filtered_df[filtered_df['justificativa'] == justificativa]
-    if start_date:
-        filtered_df = filtered_df[filtered_df['created_at'] >= pd.to_datetime(start_date)]
-    if end_date:
-        filtered_df = filtered_df[filtered_df['created_at'] <= pd.to_datetime(end_date)]
-
+def update_cards(municipio, unidade, tipo_gas, status, justificativa, start_date, end_date):
+    filtered_df = get_filtered_df(municipio, unidade, tipo_gas, status, justificativa, start_date, end_date)
     total = len(filtered_df)
     botijes = int(filtered_df['quantidade'].sum()) if 'quantidade' in filtered_df.columns else 0
     unidades = filtered_df['unidade'].nunique() if 'unidade' in filtered_df.columns else 0
-
     return str(total), str(botijes), str(unidades)
 
 @app.callback(
     [dash.dependencies.Output('municipio-filter', 'value'),
+     dash.dependencies.Output('unidade-filter', 'value'),
      dash.dependencies.Output('tipo-gas-filter', 'value'),
      dash.dependencies.Output('status-filter', 'value'),
      dash.dependencies.Output('justificativa-filter', 'value'),
@@ -379,17 +381,18 @@ def update_cards(municipio, tipo_gas, status, justificativa, start_date, end_dat
      dash.dependencies.Output('date-filter', 'end_date')],
     [dash.dependencies.Input('clear-filters-btn', 'n_clicks')],
     [dash.dependencies.State('municipio-filter', 'value'),
+     dash.dependencies.State('unidade-filter', 'value'),
      dash.dependencies.State('tipo-gas-filter', 'value'),
      dash.dependencies.State('status-filter', 'value'),
      dash.dependencies.State('justificativa-filter', 'value'),
      dash.dependencies.State('date-filter', 'start_date'),
      dash.dependencies.State('date-filter', 'end_date')]
 )
-def clear_filters(n_clicks, municipio, tipo_gas, status, justificativa, start_date, end_date):
+def clear_filters(n_clicks, municipio, unidade, tipo_gas, status, justificativa, start_date, end_date):
     if n_clicks and n_clicks > 0:
-        return None, None, None, None, None, None
+        return None, None, None, None, None, None, None
 
-    return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+    return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
 @app.callback(
     [dash.dependencies.Output('date-chart', 'figure'),
@@ -398,14 +401,15 @@ def clear_filters(n_clicks, municipio, tipo_gas, status, justificativa, start_da
      dash.dependencies.Output('status-chart', 'figure'),
      dash.dependencies.Output('unidades-chart', 'figure')],
     [dash.dependencies.Input('municipio-filter', 'value'),
+     dash.dependencies.Input('unidade-filter', 'value'),
      dash.dependencies.Input('tipo-gas-filter', 'value'),
      dash.dependencies.Input('status-filter', 'value'),
      dash.dependencies.Input('justificativa-filter', 'value'),
      dash.dependencies.Input('date-filter', 'start_date'),
      dash.dependencies.Input('date-filter', 'end_date')]
 )
-def update_charts(municipio, tipo_gas, status, justificativa, start_date, end_date):
-    filtered_df = get_filtered_df(municipio, tipo_gas, status, justificativa, start_date, end_date)
+def update_charts(municipio, unidade, tipo_gas, status, justificativa, start_date, end_date):
+    filtered_df = get_filtered_df(municipio, unidade, tipo_gas, status, justificativa, start_date, end_date)
 
     date_chart = build_date_chart(filtered_df)
     tipo_gas_chart = build_tipo_gas_chart(filtered_df)
