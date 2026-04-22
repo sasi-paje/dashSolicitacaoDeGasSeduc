@@ -45,7 +45,8 @@ def build_tipo_gas_chart(filtered_df):
     return tipo_gas_chart
 
 def build_justificativa_chart(filtered_df):
-    justificativa_chart = px.bar(filtered_df.groupby('justificativa').size().reset_index(name='count'), x='justificativa', y='count', color_discrete_sequence=['#10b981'], text='count')
+    df_just = filtered_df[filtered_df['justificativa'].notna() & (filtered_df['justificativa'] != '')]
+    justificativa_chart = px.bar(df_just.groupby('justificativa').size().reset_index(name='count'), x='justificativa', y='count', color_discrete_sequence=['#10b981'], text='count')
     justificativa_chart.update_traces(textposition='outside', hovertemplate='%{x}: %{y}<extra></extra>')
     justificativa_chart.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', font_color='#1e293b', font=dict(size=12), xaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), yaxis=dict(gridcolor='#f1f5f9', color='#94a3b8', linecolor='#f1f5f9'), margin=dict(l=20, r=20, t=30, b=20), showlegend=False)
     return justificativa_chart
