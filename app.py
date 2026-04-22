@@ -258,7 +258,7 @@ app.layout = html.Div(
                             children=[
                                 html.Div(
                                     children=[
-                                        html.P("Total de Botijões", style={'fontSize': '13px', 'color': '#64748b', 'margin': '0 0 4px 0'}),
+                                        html.P("Total de Botijas Solicitadas", style={'fontSize': '13px', 'color': '#64748b', 'margin': '0 0 4px 0'}),
                                         html.H2(id='total-botijes', children=f"{df['quantidade'].sum() if 'quantidade' in df.columns else 0}", style={'fontSize': '28px', 'fontWeight': '700', 'margin': '0', 'color': '#1e293b'})
                                     ]
                                 ),
